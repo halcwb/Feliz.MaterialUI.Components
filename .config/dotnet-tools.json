@@ -1,0 +1,30 @@
+{
+  "version": 1,
+  "isRoot": true,
+  "tools": {
+    "fake-cli": {
+      "version": "5.19.1",
+      "commands": [
+        "fake"
+      ]
+    },
+    "paket": {
+      "version": "5.242.2",
+      "commands": [
+        "paket"
+      ]
+    },
+    "femto": {
+      "version": "0.8.6",
+      "commands": [
+        "femto"
+      ]
+    },
+    "fantomas-tool": {
+      "version": "3.3.0",
+      "commands": [
+        "fantomas"
+      ]
+    }
+  }
+}
