@@ -7,6 +7,8 @@ open Feliz.MaterialUI
 
 open Components
 
+module Filter = Autocomplete.Filter
+
 // demo data
 module Data =
 
@@ -214,18 +216,23 @@ module Data =
 
 
 type State =
-    { Current: {| title: string; year: int |} option }
+    { Current: {| title: string; year: int |} option
+      Filter: Autocomplete.Filter }
 
-let init() = { Current = None }, Cmd.none
+let init() =
+    { Current = None
+      Filter = Filter.StartsWith }, Cmd.none
 
-type Msg = Selected of string
+type Msg =
+    | Selected of string
+    | SetFilter of string
 
 let update msg state =
     match msg with
     | Selected s ->
         printfn "selected: %s" s
         { state with Current = Data.top100Films |> List.tryFind (fun m -> m.title = s) }, Cmd.none
-
+    | SetFilter s -> { state with Filter = s |> Filter.toFilter }, Cmd.none
 
 let printTitle (state: State) =
     match state.Current with
@@ -237,10 +244,51 @@ let render (state: State) dispatch =
     let autocomplete =
         { Autocomplete.props with
               Dispatch = (Selected >> dispatch)
-              Options = Data.top100Films |> List.map (fun m -> m.title)
+              Options =
+                  Data.top100Films
+                  |> List.map (fun m -> m.title)
+                  |> List.sort
               Label = "Pick a movie"
-              Filter = Autocomplete.StartsWith }
+              Filter = state.Filter }
         |> Autocomplete.render
+
+    let filter =
+        Html.div
+            [ prop.style [ style.marginTop 20 ]
+              prop.children
+                  [ Mui.formControl
+                      [ formControl.component' "fieldset"
+                        formControl.children
+                            [ Mui.formLabel [ prop.text "Filter type" ]
+                              Mui.radioGroup
+                                  [ radioGroup.value (sprintf "%A" state.Filter)
+                                    radioGroup.onChange (SetFilter >> dispatch)
+                                    radioGroup.children
+                                        [ Mui.formControlLabel
+                                            [ formControlLabel.value (Filter.StartsWith |> Filter.toString)
+                                              formControlLabel.control (Mui.radio [])
+                                              formControlLabel.label "Starts with" ]
+
+                                          Mui.formControlLabel
+                                              [ formControlLabel.value (Filter.Contains |> Filter.toString)
+                                                formControlLabel.control (Mui.radio [])
+                                                formControlLabel.label "Contains" ]
+
+                                          Mui.formControlLabel
+                                              [ formControlLabel.value
+                                                  (Filter.StartsWithCaseSensitive |> Filter.toString)
+                                                formControlLabel.control (Mui.radio [])
+                                                formControlLabel.label "Starts with case sensitive" ]
+
+                                          Mui.formControlLabel
+                                              [ formControlLabel.value (Filter.ContainsCaseSensitive |> Filter.toString)
+                                                formControlLabel.control (Mui.radio [])
+                                                formControlLabel.label "Contains case sensitive" ]
+
+                                          Mui.formControlLabel
+                                              [ formControlLabel.value (Filter.Exact |> Filter.toString)
+                                                formControlLabel.control (Mui.radio [])
+                                                formControlLabel.label "Exact" ] ] ] ] ] ] ]
 
     let selected =
         Html.div
@@ -252,6 +300,6 @@ let render (state: State) dispatch =
 
     Mui.container
         [ prop.style
-            [ style.padding 10
+            [ style.padding 50
               style.marginTop 20 ]
-          container.children [ autocomplete; selected ] ]
+          container.children [ autocomplete; selected; filter ] ]
