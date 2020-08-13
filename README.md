@@ -1,4 +1,8 @@
-# Feliz.MaterialUI.Autocomplete
+# Feliz.MaterialUI.Components
+
+An app to demonstrate different components.
+
+### Autocomplete
 
 Autocomplete setup with properties.
 

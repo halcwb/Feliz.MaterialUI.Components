@@ -46,18 +46,17 @@ module Autocomplete =
         { Dispatch: string -> unit
           Options: string list
           Label: string
-          Filter: Filter }
+          Filter: Filter
+          SetValueIfOne: bool }
 
     let props =
         { Dispatch = ignore
           Options = []
           Label = ""
-          Filter = Filter.Contains }
+          Filter = Filter.Contains
+          SetValueIfOne = true }
 
-    let private useStyles =
-        Styles.makeStyles (fun theme styles -> {|  |}
-
-            )
+    let private useStyles = Styles.makeStyles (fun theme styles -> {|  |})
 
     // It seems that options need to be an array of objects.
     // Make the objects optional to allow for the case of no
@@ -78,9 +77,15 @@ module Autocomplete =
              (fun (props: Props) ->
                  let _, dispatch = React.useElmish (init, update props.Dispatch, [||])
                  let classes = useStyles()
+                 let opts = props.Options |> mapOptions
 
                  Mui.autocomplete
-                     [ autocomplete.options (props.Options |> mapOptions)
+                     [ autocomplete.options opts
+                       // automatically set the value if there is only one
+                       // and disable clear button
+                       if ((opts |> Array.length) = 1) && props.SetValueIfOne then
+                           autocomplete.disableClearable true
+                           autocomplete.value (opts |> Array.head)
                        autocomplete.getOptionLabel (applyToOption (fun _ -> "") id)
                        autocomplete.autoComplete true
                        autocomplete.renderInput (fun pars ->

@@ -9,7 +9,10 @@
         <None Include="paket.references" />
         <None Include="style.scss" />
         <Compile Include="Version.fs" />
+        <Compile Include="Components\Titlebar.fs" />
         <Compile Include="Components\Autocomplete.fs" />
+        <Compile Include="Components\RadioButtons.fs" />
+        <Compile Include="Components\MenuDrawer.fs" />
         <Compile Include="App.fs" />
         <Compile Include="Main.fs" />
     </ItemGroup>

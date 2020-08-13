@@ -4,6 +4,7 @@ open Elmish
 open Elmish.React
 open Feliz
 open Feliz.MaterialUI
+open Fable.MaterialUI
 
 open Components
 
@@ -240,66 +241,62 @@ let printTitle (state: State) =
     | Some m -> sprintf "You picked: %s from the year %i" m.title m.year
 
 
+let private comp =
+    React.functionComponent (fun (props: {| state: State; dispatch: Msg -> unit |}) ->
+
+        let titleBar =
+            let lbuttons = [ Icons.menuIcon [], ignore ]
+
+            let rbuttons = [ Icons.infoIcon [], ignore ]
+
+            Titlebar.render "Feliz.MaterialUI Components" lbuttons rbuttons
+
+        let autocomplete =
+            { Autocomplete.props with
+                  Dispatch = (Selected >> props.dispatch)
+                  Options =
+                      Data.top100Films
+                      |> List.map (fun m -> m.title)
+                      |> List.sort
+                  Label = "Pick a movie"
+                  Filter = props.state.Filter }
+            |> Autocomplete.render
+
+        let filter =
+            Html.div
+                [ prop.style [ style.marginTop 20 ]
+                  prop.children
+                      [ [ Filter.StartsWith, "Starts with"
+                          Filter.Contains, "Contains"
+                          Filter.StartsWithCaseSensitive, "Starts with case sensitive"
+                          Filter.ContainsCaseSensitive, "Contains case sensitive"
+                          Filter.Exact, "Exact" ]
+                        |> List.map (fun (v, l) -> v |> Filter.toString, l)
+                        |> RadioButtons.render "Filter type" (SetFilter >> props.dispatch) ] ]
+
+        let selected =
+            Html.div
+                [ prop.style [ style.marginTop 20 ]
+                  prop.children
+                      [ Mui.typography
+                          [ typography.variant.caption
+                            typography.children (props.state |> printTitle) ] ] ]
+
+        let content =
+            Mui.container
+                [ prop.style
+                    [ style.padding 50
+                      style.marginTop 30 ]
+                  container.children [ titleBar; autocomplete; selected; filter ] ]
+
+
+        Mui.themeProvider
+            [ themeProvider.theme (Styles.createMuiTheme())
+              themeProvider.children [ content ] ]
+
+        )
+
 let render (state: State) dispatch =
-    let autocomplete =
-        { Autocomplete.props with
-              Dispatch = (Selected >> dispatch)
-              Options =
-                  Data.top100Films
-                  |> List.map (fun m -> m.title)
-                  |> List.sort
-              Label = "Pick a movie"
-              Filter = state.Filter }
-        |> Autocomplete.render
-
-    let filter =
-        Html.div
-            [ prop.style [ style.marginTop 20 ]
-              prop.children
-                  [ Mui.formControl
-                      [ formControl.component' "fieldset"
-                        formControl.children
-                            [ Mui.formLabel [ prop.text "Filter type" ]
-                              Mui.radioGroup
-                                  [ radioGroup.value (sprintf "%A" state.Filter)
-                                    radioGroup.onChange (SetFilter >> dispatch)
-                                    radioGroup.children
-                                        [ Mui.formControlLabel
-                                            [ formControlLabel.value (Filter.StartsWith |> Filter.toString)
-                                              formControlLabel.control (Mui.radio [])
-                                              formControlLabel.label "Starts with" ]
-
-                                          Mui.formControlLabel
-                                              [ formControlLabel.value (Filter.Contains |> Filter.toString)
-                                                formControlLabel.control (Mui.radio [])
-                                                formControlLabel.label "Contains" ]
-
-                                          Mui.formControlLabel
-                                              [ formControlLabel.value
-                                                  (Filter.StartsWithCaseSensitive |> Filter.toString)
-                                                formControlLabel.control (Mui.radio [])
-                                                formControlLabel.label "Starts with case sensitive" ]
-
-                                          Mui.formControlLabel
-                                              [ formControlLabel.value (Filter.ContainsCaseSensitive |> Filter.toString)
-                                                formControlLabel.control (Mui.radio [])
-                                                formControlLabel.label "Contains case sensitive" ]
-
-                                          Mui.formControlLabel
-                                              [ formControlLabel.value (Filter.Exact |> Filter.toString)
-                                                formControlLabel.control (Mui.radio [])
-                                                formControlLabel.label "Exact" ] ] ] ] ] ] ]
-
-    let selected =
-        Html.div
-            [ prop.style [ style.marginTop 20 ]
-              prop.children
-                  [ Mui.typography
-                      [ typography.variant.caption
-                        typography.children (state |> printTitle) ] ] ]
-
-    Mui.container
-        [ prop.style
-            [ style.padding 50
-              style.marginTop 20 ]
-          container.children [ autocomplete; selected; filter ] ]
+    comp
+        ({| state = state
+            dispatch = dispatch |})
