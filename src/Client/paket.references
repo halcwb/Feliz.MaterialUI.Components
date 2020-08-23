@@ -4,7 +4,9 @@ group Client
     Fable.Elmish.Debugger
     Fable.Elmish.React
     Fable.Elmish.HMR
+    Fable.Browser.Navigator
     Thoth.Fetch
+    Thoth.Elmish.Debouncer
     Fable.FontAwesome.Free
     Fable.MaterialUI.Icons
     Feliz

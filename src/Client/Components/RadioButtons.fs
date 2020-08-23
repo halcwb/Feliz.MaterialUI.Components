@@ -20,62 +20,73 @@ module RadioButtons =
 
     let useStyles =
         Styles.makeStyles (fun styles theme ->
-            {| fieldset =
-                   styles.create
-                       [ style.marginTop (theme.spacing 3)
-                         style.marginBottom (theme.spacing 3) ] |})
+            {|
+                fieldset =
+                    styles.create [
+                        style.marginTop (theme.spacing 3)
+                        style.marginBottom (theme.spacing 3)
+                    ]
+            |})
 
 
     type Props =
-        { Title: string
-          Items: Item list
-          Dispatch: string -> unit }
+        {
+            Title: string
+            Items: Item list
+            Dispatch: string -> unit
+        }
 
-    and Item =
-        { Value: string
-          Label: string }
+    and Item = { Value: string; Label: string }
 
 
     let props =
-        { Title = ""
-          Items = []
-          Dispatch = ignore }
+        {
+            Title = ""
+            Items = []
+            Dispatch = ignore
+        }
 
 
     let private comp =
         React.functionComponent
             ("radiobuttons",
              (fun (props: Props) ->
-                 let classes = useStyles()
+                 let classes = useStyles ()
 
-                 Mui.formControl
-                     [ formControl.component' "fieldset"
-                       prop.className classes.fieldset
-                       formControl.children
-                           [ Mui.formLabel
-                               [ formLabel.component' "legend"
-                                 prop.text props.Title ]
-                             Mui.radioGroup
-                                 [ radioGroup.onChange (props.Dispatch)
-                                   // create the radiobuttons
-                                   props.Items
-                                   |> List.map (fun b ->
-                                       Mui.formControlLabel
-                                           [ formControlLabel.control (Mui.radio [])
-                                             formControlLabel.value b.Value
-                                             formControlLabel.label b.Label ])
+                 Mui.formControl [
+                     formControl.component' "fieldset"
+                     prop.className classes.fieldset
+                     formControl.children [
+                         Mui.formLabel [
+                             formLabel.component' "legend"
+                             prop.text props.Title
+                         ]
+                         Mui.radioGroup [
+                             radioGroup.onChange (props.Dispatch)
+                             // create the radiobuttons
+                             props.Items
+                             |> List.map (fun b ->
+                                 Mui.formControlLabel [
+                                     formControlLabel.control (Mui.radio [])
+                                     formControlLabel.value b.Value
+                                     formControlLabel.label b.Label
+                                 ])
 
-                                   |> radioGroup.children ] ] ])
+                             |> radioGroup.children
+                         ]
+                     ]
+                 ])
 
             )
 
     let render title dispatch items =
         let items =
             items
-            |> List.map (fun (v, l) ->
-                { Value = v
-                  Label = l })
+            |> List.map (fun (v, l) -> { Value = v; Label = l })
+
         comp
-            ({ Title = title
-               Dispatch = dispatch
-               Items = items })
+            ({
+                 Title = title
+                 Dispatch = dispatch
+                 Items = items
+             })

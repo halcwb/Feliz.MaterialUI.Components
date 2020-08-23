@@ -18,7 +18,9 @@ group Client
     nuget Fable.Elmish.Debugger
     nuget Fable.Elmish.HMR
     nuget Fable.Elmish.React
+    nuget Fable.Browser.Navigator
     nuget Thoth.Fetch
+    nuget Thoth.Elmish.Debouncer
     nuget Fable.React
     nuget Fable.MaterialUI
     nuget Fable.FontAwesome.Free
