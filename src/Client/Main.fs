@@ -1,18 +1,7 @@
 module Main
 
-open System
-
 open Elmish
 open Elmish.React
-open Fable.React
-open Fable.React.Props
-open Fetch.Types
-open Thoth.Fetch
-open Thoth.Json
-open Feliz
-open Feliz.MaterialUI
-open Fable.MaterialUI.Icons
-open Fable.Core.JsInterop
 
 
 #if DEBUG

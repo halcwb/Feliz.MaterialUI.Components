@@ -9,7 +9,7 @@
         <None Include="paket.references" />
         <None Include="style.scss" />
         <Compile Include="Version.fs" />
-        <Compile Include="NumberFormat.fs" />
+        <Compile Include="Components\NumberInput2.fs" />
         <Compile Include="Components\NumberInput.fs" />
         <Compile Include="Components\ComboBox.fs" />
         <Compile Include="Components\Autocomplete.fs" />

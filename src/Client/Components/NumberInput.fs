@@ -1,6 +1,7 @@
-﻿namespace Components
+namespace Components
 
 open Browser.Types
+open Fable.React
 
 /// Numeric input component that keeps track of min, max and step values.
 /// Works well with Safari and Chrome. Has a problem with Firefox.
@@ -8,6 +9,7 @@ open Browser.Types
 /// ignores this, so, also doesn't trigger any events.
 module NumberInput =
     open System
+    open System.ComponentModel
 
     open Elmish
     open Thoth.Elmish
@@ -18,6 +20,83 @@ module NumberInput =
     open Fable.Core
     open Fable.Core.JsInterop
     open Browser
+
+    let private merge (o1: obj) (o2: obj) : obj = import "merge" "./../number-format.js"
+
+    //[<Erase>]
+    //module NumberFormat =
+
+    //    module Props =
+            
+    //        type Props =
+
+    //            //thousandSeparator	mixed: single character string or boolean true (true is default to ,)	none	Add thousand separators on number
+    //            | ThousandSeparator of char
+    //            //decimalSeparator	single character string	.	Support decimal point on a number
+    //            | DecimalSeparator of char
+    //            //thousandsGroupStyle	One of ['thousand', 'lakh', 'wan']	thousand	Define the thousand grouping style, It support three types. thousand style (thousand) : 123,456,789, indian style (lakh) : 12,34,56,789, chinese style (wan) : 1,2345,6789
+    //            //decimalScale	number	none	If defined it limits to given decimal scale
+    //            //fixedDecimalScale	boolean	false	If true it add 0s to match given decimalScale
+    //            //allowNegative	boolean	true	allow negative numbers (Only when format option is not provided)
+    //            //allowEmptyFormatting	boolean	false	Apply formatting to empty inputs
+    //            //allowLeadingZeros	boolean	false	Allow leading zeros at beginning of number
+    //            //prefix	String (ex : $)	none	Add a prefix before the number
+    //            //suffix	String (ex : /-)	none	Add a suffix after the number
+    //            //value	Number or String	null	Value to the number format. It can be a float number, or formatted string. If value is string representation of number (unformatted), isNumericString props should be passed as true.
+    //            | Value of obj
+    //            //defaultValue	Number or String	null	Value to be used as default value if value is not provided. The format of defaultValue should be similar as defined for the value.
+    //            //isNumericString	boolean	false	If value is passed as string representation of numbers (unformatted) then this should be passed as true
+    //            //displayType	String: text / input	input	If input it renders a input element where formatting happens as you input characters. If text it renders it as a normal text in a span formatting the given value
+    //            //type	One of ['text', 'tel', 'password']	text	Input type attribute
+    //            //format	String : Hash based ex (#### #### #### ####)
+    //            //Or Function	none	If format given as hash string allow number input inplace of hash. If format given as function, component calls the function with unformatted number and expects formatted number.
+    //            //removeFormatting	(formattedValue) => numericString	none	If you are providing custom format method and it add numbers as format you will need to add custom removeFormatting logic
+    //            //mask	String (ex : _)	' '	If mask defined, component will show non entered placed with masked value.
+    //            //customInput	Component Reference	input	This allow supporting custom inputs with number format.
+    //            //onValueChange	(values) => {}	none	onValueChange handler accepts values object
+    //            | OnValueChange of (obj -> unit)
+    //            //isAllowed	(values) => true or false	none	A checker function to check if input value is valid or not
+    //            //renderText	(formattedValue) => React Element	null	A renderText method useful if you want to render formattedValue in different element other than span.
+    //            //getInputRef	(elm) => void	null	Method to get reference of input, span (based on displayType prop) or the customInput's reference. See Getting reference
+    //            | GetInputRef of (obj -> unit)
+    //            //allowedDecimalSeparators	array of char	none	Characters which when pressed result in a decimal separator. When missing, decimal separator and '.' are used
+
+    [<Erase>]
+    type NumberFormat =
+
+        static member inline numberformat =
+            fun props ->
+
+                let props =
+                    //[
+                    //    props?value |> Props.Value
+                    //    props?inputRef |> Props.GetInputRef
+                    //    ',' |> Props.DecimalSeparator
+                    //    '.' |> Props.ThousandSeparator
+
+                    //    fun values ->
+                    //        printfn "getting value: %A" values?value
+                    //        {| target = {| value = values?value |}|}
+                    //        |> props?onChange
+                    //    |> Props.OnValueChange
+                    //]
+                    // |> keyValueList CaseRules.LowerFirst
+
+                    {|
+                        onValueChange =
+                            fun values ->
+                                printfn "getting value: %A" values?value
+                                {| target = {| value = values?value |} |}
+                        decimalSeparator = ","
+                        thousandSeparator = "."
+                    |}
+                    |> merge props
+
+
+                ofImport "default" "./../number-format.js" props []
+
+            |> ReactElementType.ofFunction
+    
 
     type Locale =
         | Dutch
@@ -213,6 +292,9 @@ module NumberInput =
 
                      textField.size.small
                      textField.InputProps [
+                         // uses the react-number-format lib
+                         // input.inputComponent (NumberFormat.numberformat)
+
                          input.inputProps [
                              prop.step props.step
                              match props.min with
