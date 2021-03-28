@@ -463,6 +463,9 @@ let private comp =
         let numberInput2 =
             NumberInput2.render "Enter a number" "kg" (fun s -> printfn "entered: %s" s)
 
+        let numberInput3 =
+            NumberInput3.render "Enter a number" "kg" (fun s -> printfn "entered: %s" s)
+
         let menuDrawer =
             MenuDrawer.render props.state.IsMenuDrawerOpen ignore [ "Hello World" ]
 
@@ -479,6 +482,7 @@ let private comp =
                     comboBox
                     numberInput
                     numberInput2
+                    numberInput3
                 ]
             ]
 

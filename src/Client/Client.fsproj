@@ -9,6 +9,7 @@
         <None Include="paket.references" />
         <None Include="style.scss" />
         <Compile Include="Version.fs" />
+        <Compile Include="Components\NumberInput3.fs" />
         <Compile Include="Components\NumberInput2.fs" />
         <Compile Include="Components\NumberInput.fs" />
         <Compile Include="Components\ComboBox.fs" />
